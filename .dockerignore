@@ -1,0 +1,7 @@
+# flyctl launch added from .gitignore
+**\-e "venv\n__pycache__\n*.pyc\n*.log\nstatus_log.json\ncamera_events.log" 
+
+# flyctl launch added from .pytest_cache\.gitignore
+# Created by pytest automatically.
+.pytest_cache\**\*
+fly.toml
