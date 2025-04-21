@@ -1,1 +1,1 @@
-venv/ 
+-e "venv/\n__pycache__/\n*.pyc\n*.log\nstatus_log.json\ncamera_events.log" 
