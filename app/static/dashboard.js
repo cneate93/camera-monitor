@@ -20,8 +20,13 @@ async function loadCameraGroups() {
         updateDashboard();
         requestNotificationPermission();
         applySavedTheme();
+
+        // Set the current group in the dropdown
+        dropdown.value = currentGroup;
+
     } catch (error) {
         console.error("Error fetching camera groups:", error);
+        showStatusMessage('Failed to load camera groups. Please try again later.', true);
     }
 }
 
@@ -203,6 +208,7 @@ async function updateDashboard() {
 
     } catch (err) {
         console.error("Dashboard update failed:", err);
+        showStatusMessage('Failed to load dashboard data. Please try again later.', true);
     }
 }
 
@@ -228,6 +234,17 @@ function formatDuration(sinceEpoch) {
     const mins = Math.floor((delta % 3600) / 60);
     const secs = delta % 60;
     return `${hrs}h ${mins}m ${secs}s`;
+}
+
+// Display status messages to the user (error/success)
+function showStatusMessage(message, isError = false) {
+    const statusMessage = document.getElementById("status-message");
+    statusMessage.textContent = message;
+    statusMessage.style.display = 'block';
+    statusMessage.classList.toggle('error', isError);
+    setTimeout(() => {
+        statusMessage.style.display = 'none';
+    }, 5000);
 }
 
 // Start everything
