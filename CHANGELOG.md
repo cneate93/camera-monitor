@@ -1,26 +1,31 @@
 # 📦 Changelog
 
-All notable changes to this project will be documented in this file.  
-This project follows [Semantic Versioning](https://semver.org/).
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
 ## [Unreleased]
 
 ### Added
-- Initial changelog setup
-- GitHub Actions workflow for Python linting
-- `requirements.txt` for dependency management
-- `.gitignore` to exclude virtualenv, logs, cache, etc.
-- Basic `README.md` file
+- Initial CONTRIBUTING.md and CHANGELOG.md setup
+- Snapshot support via `snapshot_url`
+- Notification toggle with Chrome support
+- Light/Dark theme switch
+- Docker support with docker-compose
+
+### Fixed
+- Uptime counter resets after reconnect now resolved
+- Latency calculation bug for offline cameras
 
 ---
 
-## [0.1.0] - 2025-04-21
+## [0.1.0] - 2024-12-01
 
 ### Added
-- First release of the Camera Monitor Flask App
-- Live camera ping monitoring with uptime/latency display
-- Per-camera status tracking and notification toggle
-- Log storage using JSON (`status_log.json`)
-- Frontend dashboard with light/dark theme
+- Initial public release
+- Flask-based monitoring dashboard
+- Camera status tracking
+- Event logging to TinyDB
+- Basic dashboard UI
