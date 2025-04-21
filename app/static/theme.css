@@ -1,191 +1,190 @@
 :root {
-    --bg-color: #111;
-    --text-color: #eee;
-    --accent-green: #2e7d32;
-    --accent-red: #c62828;
-    --card-bg: #1c1c1c;
-    --border-color: #444;
-    --table-header-bg: #222;
-    --online-color: #4caf50;
-    --offline-color: #ff6b6b;
-    --dropdown-bg: #333;
-    --dropdown-text: #fff;
-  }
-  
-  [data-theme="light"] {
-    --bg-color: #f7f7f7;
-    --text-color: #111;
-    --accent-green: #c8e6c9;
-    --accent-red: #ffcdd2;
-    --card-bg: #fff;
-    --border-color: #ccc;
-    --table-header-bg: #e0e0e0;
-    --online-color: #2e7d32;
-    --offline-color: #c62828;
-    --dropdown-bg: #eee;
-    --dropdown-text: #111;
-  }
-  
-  /* General layout */
-  body {
-    background: var(--bg-color);
-    color: var(--text-color);
-    font-family: 'Segoe UI', sans-serif;
-    margin: 0;
-    padding: 0;
-  }
-  
-  nav {
-    background: var(--table-header-bg);
-    padding: 1em;
-    text-align: center;
-  }
-  
-  nav a {
-    margin: 0 1.5em;
-    text-decoration: none;
-    color: var(--text-color);
-    font-weight: bold;
-  }
-  
-  .container {
-    max-width: 1200px;
-    margin: auto;
-    padding: 2em;
-  }
-  
-  h1 {
-    text-align: center;
-    margin-bottom: 1.5em;
-  }
-  
-  .section-title {
-    font-size: 1.2rem;
-    margin: 1em 0 0.5em;
-  }
-  
-  #camera-group-filter {
-    width: 180px;
-    padding: 8px;
-    margin: 10px 0 20px 0;
-    border: none;
-    background: var(--dropdown-bg);
-    color: var(--dropdown-text);
-    font-size: 14px;
-  }
-  
-  #theme-toggle {
-    margin-left: 1em;
-    padding: 6px 12px;
-    background: var(--dropdown-bg);
-    color: var(--dropdown-text);
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  #theme-toggle:hover {
-    opacity: 0.9;
-  }
-  
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 2em;
-  }
-  
-  th, td {
-    padding: 10px;
-    border: 1px solid var(--border-color);
-    text-align: center;
-  }
-  
-  th {
-    background-color: var(--table-header-bg);
-  }
-  
-  tr.online {
-    background-color: var(--accent-green);
-  }
-  
-  tr.offline {
-    background-color: var(--accent-red);
-  }
-  
-  .log-section {
-    background: var(--card-bg);
-    padding: 1em;
-    border-radius: 8px;
-    max-height: 300px;
-    overflow-y: auto;
-  }
-  
-  .log-line {
-    border-bottom: 1px solid var(--border-color);
-    padding: 6px 0;
-  }
-  
-  .online {
-    color: var(--online-color);
-  }
-  
-  .offline {
-    color: var(--offline-color);
-  }
-  
-  canvas {
-    background-color: var(--card-bg);
-    border-radius: 8px;
-    padding: 10px;
-  }
-  
-  /* Toggle Bell Button */
-  .toggle-bell {
-    font-size: 20px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--text-color);
-  }
-  
-  .toggle-bell:hover {
-    opacity: 0.8;
-    transform: scale(1.1);
-  }
-  
-  /* Optional styling for silenced cameras */
-  .silenced-row td {
-    opacity: 0.5;
-  } 
-  
-  /* Snapshot Modal */
+  --bg-color: #111;
+  --text-color: #eee;
+  --accent-green: #2e7d32;
+  --accent-red: #c62828;
+  --card-bg: #1c1c1c;
+  --border-color: #444;
+  --table-header-bg: #222;
+  --online-color: #4caf50;
+  --offline-color: #ff6b6b;
+  --dropdown-bg: #333;
+  --dropdown-text: #fff;
+}
+
+[data-theme="light"] {
+  --bg-color: #f7f7f7;
+  --text-color: #111;
+  --accent-green: #c8e6c9;
+  --accent-red: #ffcdd2;
+  --card-bg: #fff;
+  --border-color: #ccc;
+  --table-header-bg: #e0e0e0;
+  --online-color: #2e7d32;
+  --offline-color: #c62828;
+  --dropdown-bg: #eee;
+  --dropdown-text: #111;
+}
+
+body {
+  background: var(--bg-color);
+  color: var(--text-color);
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+nav {
+  background: var(--table-header-bg);
+  padding: 1em;
+  text-align: center;
+}
+
+nav a {
+  margin: 0 1.5em;
+  text-decoration: none;
+  color: var(--text-color);
+  font-weight: bold;
+}
+
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 2em;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 1.5em;
+}
+
+.section-title {
+  font-size: 1.2rem;
+  margin: 1em 0 0.5em;
+}
+
+#camera-group-filter {
+  width: 180px;
+  padding: 8px;
+  margin: 10px 0 20px 0;
+  border: none;
+  background: var(--dropdown-bg);
+  color: var(--dropdown-text);
+  font-size: 14px;
+}
+
+#theme-toggle {
+  margin-left: 1em;
+  padding: 6px 12px;
+  background: var(--dropdown-bg);
+  color: var(--dropdown-text);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#theme-toggle:hover {
+  opacity: 0.9;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 2em;
+}
+
+th, td {
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  text-align: center;
+}
+
+th {
+  background-color: var(--table-header-bg);
+}
+
+tr.online {
+  background-color: var(--accent-green);
+}
+
+tr.offline {
+  background-color: var(--accent-red);
+}
+
+.log-section {
+  background: var(--card-bg);
+  padding: 1em;
+  border-radius: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.log-line {
+  border-bottom: 1px solid var(--border-color);
+  padding: 6px 0;
+}
+
+.online {
+  color: var(--online-color);
+}
+
+.offline {
+  color: var(--offline-color);
+}
+
+canvas {
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  padding: 10px;
+}
+
+/* Toggle Bell Button */
+.bell-toggle {
+  font-size: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-color);
+}
+
+.bell-toggle:hover {
+  opacity: 0.8;
+  transform: scale(1.1);
+}
+
+/* Optional styling for silenced cameras */
+.silenced-row td {
+  opacity: 0.5;
+}
+
+/* Snapshot Modal */
 #snapshot-modal {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background-color: rgba(0, 0, 0, 0.9);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  }
-  
-  #snapshot-modal img {
-    max-width: 90%;
-    max-height: 90%;
-    border: 4px solid white;
-    box-shadow: 0 0 12px #000;
-    border-radius: 8px;
-  }
-  
-  #snapshot-modal .close {
-    position: absolute;
-    top: 20px;
-    right: 30px;
-    font-size: 28px;
-    font-weight: bold;
-    color: white;
-    cursor: pointer;
-    background: transparent;
-    border: none;
-  }
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+#snapshot-modal img {
+  max-width: 90%;
+  max-height: 90%;
+  border: 4px solid white;
+  box-shadow: 0 0 12px #000;
+  border-radius: 8px;
+}
+
+#snapshot-modal .close {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  font-size: 28px;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+}

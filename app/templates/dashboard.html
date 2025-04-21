@@ -6,86 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='theme.css') }}">
-    <style>
-        #camera-group-filter {
-            width: 180px;
-            padding: 8px;
-            margin: 10px 0 20px 0;
-            border: none;
-            background: var(--bg-secondary);
-            color: var(--text-color);
-            font-size: 14px;
-        }
-
-        .theme-toggle {
-            float: right;
-            background: var(--bg-secondary);
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-            padding: 6px 12px;
-            font-size: 14px;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-
-        .toggle-bell {
-            font-size: 18px;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-        }
-
-        .snapshot-btn {
-            font-size: 13px;
-            padding: 4px 6px;
-            margin-left: 4px;
-            background: #333;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .snapshot-btn:hover {
-            background: #555;
-        }
-
-        .silenced-row td {
-            opacity: 0.5;
-        }
-
-        #snapshot-modal {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        #snapshot-modal img {
-            max-width: 90%;
-            max-height: 90%;
-            border: 4px solid white;
-            box-shadow: 0 0 12px #000;
-        }
-
-        #snapshot-modal .close {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            font-size: 24px;
-            color: white;
-            cursor: pointer;
-        }
-    </style>
 </head>
 <body>
     <div class="container">
         <h1>
             📷 Camera Monitor Dashboard
-            <button class="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
+            <button id="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
         </h1>
 
         <div class="section-title">Filter Cameras by Zone</div>
@@ -119,9 +45,9 @@
         <div class="log-section" id="event-log">Loading...</div>
     </div>
 
-    <!-- Modal will be injected by JS -->
+    <!-- Snapshot Modal -->
     <div id="snapshot-modal" style="display:none;">
-        <span class="close" onclick="document.getElementById('snapshot-modal').style.display='none'">✖</span>
+        <button class="close" onclick="document.getElementById('snapshot-modal').style.display='none'">✖</button>
         <img id="snapshot-image" src="" alt="Snapshot">
     </div>
 

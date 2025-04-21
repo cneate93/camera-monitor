@@ -10,9 +10,9 @@ from statistics import mean
 
 # === CONFIGURATION ===
 
-CONFIG_PATH = os.path.join("app", "config", "cameras.json")  # Path to the cameras JSON configuration file
-LOG_DB = "status_log.json"  # Path to TinyDB for status logs
-LOG_FILE = "camera_events.log"  # Path to the camera events log file
+CONFIG_PATH = os.path.join("config", "cameras.json")
+LOG_DB = os.path.join("logs", "status_log.json")
+LOG_FILE = os.path.join("logs", "camera_events.log")
 
 # === UTILITY ===
 

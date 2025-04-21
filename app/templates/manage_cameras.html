@@ -5,69 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Cameras</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='theme.css') }}">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #121212;
-            color: #fff;
-            margin: 0;
-            padding: 0;
-        }
-        h1 {
-            text-align: center;
-            margin-top: 20px;
-        }
-        .container {
-            width: 80%;
-            margin: 20px auto;
-        }
-        .section-title {
-            font-size: 20px;
-            margin: 10px 0;
-        }
-        input, button {
-            padding: 8px;
-            margin: 5px;
-            border: 1px solid #555;
-            background: #333;
-            color: #fff;
-            font-size: 14px;
-            border-radius: 4px;
-        }
-        input[type="text"] {
-            width: 200px;
-        }
-        button {
-            cursor: pointer;
-        }
-        button:hover {
-            background: #444;
-        }
-        #camera-list {
-            list-style-type: none;
-            padding: 0;
-        }
-        #camera-list li {
-            background: #333;
-            padding: 10px;
-            margin: 5px 0;
-            border-radius: 4px;
-        }
-        .form-section {
-            margin-bottom: 30px;
-        }
-        .status-message {
-            padding: 10px;
-            margin: 10px 0;
-            color: white;
-            background-color: #28a745; /* Green for success */
-            border-radius: 5px;
-            display: none;
-        }
-        .status-message.error {
-            background-color: #dc3545; /* Red for error */
-        }
-    </style>
 </head>
 <body>
     <div class="container">
@@ -76,7 +13,7 @@
         <!-- Status Message -->
         <div id="status-message" class="status-message"></div>
 
-        <!-- Add Camera Form -->
+        <!-- Add Camera -->
         <div class="form-section">
             <div class="section-title">Add Camera</div>
             <form id="add-camera-form">
@@ -90,15 +27,13 @@
             </form>
         </div>
 
-        <!-- Current Cameras List -->
+        <!-- Camera List -->
         <div class="form-section">
             <div class="section-title">Current Cameras</div>
-            <ul id="camera-list">
-                <!-- Camera list will be dynamically loaded here -->
-            </ul>
+            <ul id="camera-list"></ul>
         </div>
 
-        <!-- Delete Camera Form -->
+        <!-- Delete Camera -->
         <div class="form-section">
             <div class="section-title">Delete Camera</div>
             <form id="delete-camera-form">
@@ -110,11 +45,9 @@
     </div>
 
     <script>
-        // JavaScript for managing cameras
         const cameraList = document.getElementById("camera-list");
         const statusMessage = document.getElementById("status-message");
 
-        // Display the status message to the user
         function showStatusMessage(message, isError = false) {
             statusMessage.textContent = message;
             statusMessage.style.display = 'block';
@@ -124,80 +57,66 @@
             }, 5000);
         }
 
-        // Fetch the current cameras and display them
-        function fetchCameras() {
-            fetch('/api/cameras')
-                .then(response => response.json())
-                .then(data => {
-                    cameraList.innerHTML = ''; // Clear the list
-                    for (let name in data) {
-                        const li = document.createElement("li");
-                        li.textContent = `${name} (${data[name]})`;  // Show IP with name
-                        cameraList.appendChild(li);
-                    }
-                })
-                .catch(err => {
-                    showStatusMessage('Failed to load cameras. Please try again later.', true);
-                });
+        async function fetchCameras() {
+            try {
+                const res = await fetch('/api/camera-list');
+                const json = await res.json();
+                if (!json.success) throw new Error(json.error || "Failed to load");
+
+                cameraList.innerHTML = '';
+                for (let name in json.data) {
+                    const { ip, group } = json.data[name];
+                    const li = document.createElement("li");
+                    li.textContent = `${name} (${ip}) [${group}]`;
+                    cameraList.appendChild(li);
+                }
+            } catch (err) {
+                showStatusMessage('Failed to load cameras. Please try again later.', true);
+            }
         }
 
-        // Handle adding a camera
-        document.getElementById("add-camera-form").addEventListener("submit", function(event) {
-            event.preventDefault();
+        document.getElementById("add-camera-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
             const name = document.getElementById("camera-name").value;
             const ip = document.getElementById("camera-ip").value;
             const group = document.getElementById("camera-group").value;
 
-            fetch('/api/cameras/add', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ name, ip, group })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    showStatusMessage(data.error, true);
-                } else {
-                    fetchCameras(); // Refresh the list after adding a camera
-                    document.getElementById("add-camera-form").reset(); // Reset the form
-                    showStatusMessage('Camera added successfully!');
-                }
-            })
-            .catch(err => {
-                showStatusMessage('Failed to add camera. Please try again later.', true);
-            });
+            try {
+                const res = await fetch('/api/cameras/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, ip, group })
+                });
+                const json = await res.json();
+                if (!json.success) throw new Error(json.error);
+                fetchCameras();
+                document.getElementById("add-camera-form").reset();
+                showStatusMessage('Camera added successfully!');
+            } catch (err) {
+                showStatusMessage(err.message, true);
+            }
         });
 
-        // Handle deleting a camera
-        document.getElementById("delete-camera-form").addEventListener("submit", function(event) {
-            event.preventDefault();
+        document.getElementById("delete-camera-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
             const name = document.getElementById("delete-camera-name").value;
 
-            fetch('/api/cameras/delete', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ name })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    showStatusMessage(data.error, true);
-                } else {
-                    fetchCameras(); // Refresh the list after deleting a camera
-                    document.getElementById("delete-camera-form").reset(); // Reset the form
-                    showStatusMessage('Camera deleted successfully!');
-                }
-            })
-            .catch(err => {
-                showStatusMessage('Failed to delete camera. Please try again later.', true);
-            });
+            try {
+                const res = await fetch('/api/cameras/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name })
+                });
+                const json = await res.json();
+                if (!json.success) throw new Error(json.error);
+                fetchCameras();
+                document.getElementById("delete-camera-form").reset();
+                showStatusMessage('Camera deleted successfully!');
+            } catch (err) {
+                showStatusMessage(err.message, true);
+            }
         });
 
-        // Initial fetch of cameras on page load
         fetchCameras();
     </script>
 </body>

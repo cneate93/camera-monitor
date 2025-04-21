@@ -12,6 +12,7 @@ bp = Blueprint("main", __name__)
 def dashboard():
     return render_template("dashboard.html")
 
+
 # -----------------------
 # API: Live Status Snapshot
 @bp.route("/api/status")
@@ -28,13 +29,15 @@ def api_status():
             "latency": entry.get("latency"),
             "uptime": entry.get("uptime")
         }
-    return jsonify(result)
+    return jsonify({"success": True, "data": result})
+
 
 # -----------------------
 # API: Ping History (last 100 pings per camera)
 @bp.route("/api/history")
 def api_history():
-    return jsonify(ping_history)
+    return jsonify({"success": True, "data": ping_history})
+
 
 # -----------------------
 # API: Recent Status Events (last 100 changes)
@@ -43,16 +46,25 @@ def api_events():
     try:
         all_logs = db.all()
         sorted_logs = sorted(all_logs, key=lambda x: x["timestamp"], reverse=True)
-        return jsonify(sorted_logs[:100])
+        return jsonify({"success": True, "data": sorted_logs[:100]})
     except Exception as e:
         logging.error(f"Error fetching event logs: {e}")
-        return jsonify({"error": f"Unable to fetch logs: {str(e)}"}), 500
+        return jsonify({"success": False, "error": f"Unable to fetch logs: {str(e)}"}), 500
+
 
 # -----------------------
 # API: Camera Groups (for filtering)
-@bp.route("/api/cameras")
-def api_cameras():
-    return jsonify(camera_groups)
+@bp.route("/api/camera-groups")
+def api_camera_groups():
+    return jsonify({"success": True, "data": camera_groups})
+
+
+# -----------------------
+# API: Full Camera List
+@bp.route("/api/camera-list")
+def api_camera_list():
+    return jsonify({"success": True, "data": cameras})
+
 
 # -----------------------
 # API: Add a Camera
@@ -61,23 +73,20 @@ def add_camera():
     data = request.get_json()
     camera_name = data.get("name")
     camera_ip = data.get("ip")
-    camera_group = data.get("group")  # Optional group for the camera
+    camera_group = data.get("group") or "Uncategorized"
 
     if not camera_name or not camera_ip:
-        return jsonify({"error": "Both name and IP are required"}), 400
+        return jsonify({"success": False, "error": "Both name and IP are required"}), 400
 
-    # Check if the camera already exists
     if camera_name in cameras:
-        return jsonify({"error": f"Camera {camera_name} already exists"}), 400
+        return jsonify({"success": False, "error": f"Camera '{camera_name}' already exists"}), 400
 
-    # Add to cameras dict (with group included)
-    cameras[camera_name] = {"ip": camera_ip, "group": camera_group if camera_group else "default"}
-    
-    # Save to file (persistent)
+    cameras[camera_name] = {"ip": camera_ip, "group": camera_group}
     save_cameras_to_file()
 
     logging.info(f"Camera {camera_name} added successfully with IP {camera_ip} and Group {camera_group}")
-    return jsonify({"message": "Camera added successfully"}), 200
+    return jsonify({"success": True, "message": f"Camera '{camera_name}' added successfully"}), 200
+
 
 # -----------------------
 # API: Delete a Camera
@@ -86,20 +95,18 @@ def delete_camera():
     data = request.get_json()
     camera_name = data.get("name")
 
-    # Check if the camera exists
-    if camera_name not in cameras:
-        return jsonify({"error": "Camera not found"}), 404
+    if not camera_name or camera_name not in cameras:
+        return jsonify({"success": False, "error": "Camera not found"}), 404
 
-    # Delete from cameras dict and camera_groups
     del cameras[camera_name]
     if camera_name in camera_groups:
         del camera_groups[camera_name]
 
-    # Save to file
     save_cameras_to_file()
 
     logging.info(f"Camera {camera_name} deleted successfully")
-    return jsonify({"message": "Camera deleted successfully"}), 200
+    return jsonify({"success": True, "message": f"Camera '{camera_name}' deleted successfully"}), 200
+
 
 # -----------------------
 # Route: Camera Management

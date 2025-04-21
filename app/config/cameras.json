@@ -1,8 +1,0 @@
-{
-  "Main": { "ip": "10.140.6.150", "group": "Core" },
-  "Front Corner 1": { "ip": "10.140.6.151", "group": "Front" },
-  "Front Corner 2": { "ip": "10.140.6.152", "group": "Front" },
-  "Rear Corner 1": { "ip": "10.140.6.153", "group": "Rear" },
-  "Rear Corner 2": { "ip": "10.140.6.154", "group": "Rear" },
-  "Test Google": { "ip": "8.8.8.8", "group": "External" }
-}

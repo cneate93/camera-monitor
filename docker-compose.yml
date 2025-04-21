@@ -3,9 +3,18 @@ version: "3.9"
 services:
   app:
     build: .
+    container_name: camera-monitor
     ports:
       - "5000:5000"
     volumes:
       - .:/app
+      - logs:/app/logs
+      - config:/app/config
     environment:
       - FLASK_ENV=development
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+
+volumes:
+  logs:
+  config:

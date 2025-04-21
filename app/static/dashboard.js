@@ -4,11 +4,18 @@ let camera_groups = {};
 let previousStatus = {};
 let silencedCameras = new Set(JSON.parse(localStorage.getItem("silencedCameras") || "[]"));
 
+// Helper: fetch API with error handling
+async function fetchAPI(path) {
+    const res = await fetch(path);
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || "API error");
+    return json.data;
+}
+
 // Load camera groups dynamically from API
 async function loadCameraGroups() {
     try {
-        const res = await fetch("/api/cameras");
-        camera_groups = await res.json();
+        camera_groups = await fetchAPI("/api/camera-groups");
 
         const dropdown = document.getElementById("camera-group-filter");
         dropdown.innerHTML = '<option value="All">All Cameras</option>';
@@ -20,10 +27,7 @@ async function loadCameraGroups() {
         updateDashboard();
         requestNotificationPermission();
         applySavedTheme();
-
-        // Set the current group in the dropdown
         dropdown.value = currentGroup;
-
     } catch (error) {
         console.error("Error fetching camera groups:", error);
         showStatusMessage('Failed to load camera groups. Please try again later.', true);
@@ -43,7 +47,7 @@ function sendNotification(title, body) {
     }
 }
 
-// === Silence Logic ===
+// Silence Logic
 function toggleSilence(camera) {
     if (silencedCameras.has(camera)) {
         silencedCameras.delete(camera);
@@ -58,7 +62,7 @@ function isSilenced(camera) {
     return silencedCameras.has(camera);
 }
 
-// === Theme Toggle ===
+// Theme Toggle
 function toggleTheme() {
     const html = document.documentElement;
     const currentTheme = html.getAttribute("data-theme") || "dark";
@@ -72,7 +76,7 @@ function applySavedTheme() {
     document.documentElement.setAttribute("data-theme", savedTheme);
 }
 
-// === Snapshot Modal ===
+// Snapshot Modal
 function showSnapshot(ip) {
     const modal = document.createElement("div");
     modal.id = "snapshot-modal";
@@ -82,7 +86,7 @@ function showSnapshot(ip) {
         z-index: 9999;
     `;
     const img = document.createElement("img");
-    img.src = `http://${ip}/DCIM/100MEDIA/ZCAM0001_0000.MOV?act=scr`;
+    img.src = `http://${ip}/snapshot.jpg`; // Replace with your real snapshot URL
     img.alt = "Snapshot";
     img.style = "max-width: 90%; max-height: 90%; border: 4px solid white;";
 
@@ -99,23 +103,20 @@ function showSnapshot(ip) {
     document.body.appendChild(modal);
 }
 
-// === Dashboard Update ===
+// Dashboard Update
 async function updateDashboard() {
     try {
-        const [statusRes, historyRes, logRes] = await Promise.all([
-            fetch("/api/status"),
-            fetch("/api/history"),
-            fetch("/api/events")
+        const [statusDataRaw, historyData, logData] = await Promise.all([
+            fetchAPI("/api/status"),
+            fetchAPI("/api/history"),
+            fetchAPI("/api/events")
         ]);
 
-        const statusData = await statusRes.json();
-        const historyData = await historyRes.json();
-        const logData = await logRes.json();
-        const filteredStatusData = filterByGroup(statusData);
-
+        const statusData = filterByGroup(statusDataRaw);
         let tableHTML = "";
-        for (let cam in filteredStatusData) {
-            const info = filteredStatusData[cam];
+
+        for (let cam in statusData) {
+            const info = statusData[cam];
             const rowClass = info.online ? "online" : "offline";
             const lastSeen = info.last_seen || "-";
             const duration = info.online_since ? formatDuration(info.online_since) : "-";
@@ -148,14 +149,14 @@ async function updateDashboard() {
         }
         document.getElementById("camera-table").innerHTML = tableHTML;
 
-        // === Ping Chart ===
+        // Chart
         const labels = Object.values(historyData)[0]?.map(x => x.timestamp) || [];
         const datasets = [];
         const colors = ["#4caf50", "#f44336", "#2196f3", "#ff9800", "#9c27b0", "#00bcd4", "#ffc107"];
         let colorIndex = 0;
 
         for (let cam in historyData) {
-            if (!filteredStatusData[cam]) continue;
+            if (!statusData[cam]) continue;
             const data = historyData[cam].map(x => x.status === "online" ? 1 : 0);
             datasets.push({
                 label: cam,
@@ -198,7 +199,7 @@ async function updateDashboard() {
             });
         }
 
-        // === Event Log ===
+        // Event Log
         const logContainer = document.getElementById("event-log");
         logContainer.innerHTML = "";
         logData.forEach(event => {
@@ -236,7 +237,6 @@ function formatDuration(sinceEpoch) {
     return `${hrs}h ${mins}m ${secs}s`;
 }
 
-// Display status messages to the user (error/success)
 function showStatusMessage(message, isError = false) {
     const statusMessage = document.getElementById("status-message");
     statusMessage.textContent = message;
@@ -247,6 +247,6 @@ function showStatusMessage(message, isError = false) {
     }, 5000);
 }
 
-// Start everything
+// Init
 loadCameraGroups();
 setInterval(updateDashboard, 10000);
