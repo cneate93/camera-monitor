@@ -1,0 +1,121 @@
+<!doctype html>
+<html>
+<head>
+    <title>Camera Ping History</title>
+    <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background: #111;
+            color: #eee;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #1c1c1c;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        canvas {
+            width: 100% !important;
+            height: 500px !important;
+        }
+        .note {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #aaa;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    {% include '_navbar.html' %}
+    <div class="container">
+        <h1>📈 Camera Ping History</h1>
+        <canvas id="pingChart"></canvas>
+        <div class="note">Green = Online (1), Red = Offline (0)</div>
+    </div>
+
+    <script>
+        async function loadHistory() {
+            const response = await fetch("/api/history");
+            const history = await response.json();
+
+            const labels = history["Main"].map(x => x.timestamp);
+            const datasets = [];
+
+            const colors = [
+                "#4caf50", "#f44336", "#2196f3", "#ff9800", "#9c27b0",
+                "#00bcd4", "#ffeb3b", "#e91e63", "#8bc34a", "#795548"
+            ];
+
+            let colorIndex = 0;
+
+            for (let cam in history) {
+                const data = history[cam].map(x => x.status === "online" ? 1 : 0);
+
+                datasets.push({
+                    label: cam,
+                    data: data,
+                    fill: false,
+                    borderColor: colors[colorIndex % colors.length],
+                    pointBackgroundColor: colors[colorIndex % colors.length],
+                    tension: 0.3,
+                    borderWidth: 2
+                });
+
+                colorIndex++;
+            }
+
+            const ctx = document.getElementById("pingChart").getContext("2d");
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                },
+                options: {
+                    scales: {
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Status (1 = Online, 0 = Offline)'
+                            },
+                            ticks: {
+                                stepSize: 1,
+                                min: 0,
+                                max: 1
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                maxRotation: 45,
+                                minRotation: 30
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#eee'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        loadHistory();
+    </script>
+</body>
+</html>

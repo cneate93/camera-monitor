@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+<head>
+    <title>Camera Monitor</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #111; color: #eee; }
+        h1 { text-align: center; }
+        table { width: 80%; margin: auto; border-collapse: collapse; }
+        th, td { padding: 12px; border: 1px solid #444; text-align: center; }
+        th { background-color: #222; }
+        tr.online { background-color: #2e7d32; }
+        tr.offline { background-color: #c62828; }
+    </style>
+    <script>
+        async function fetchStatus() {
+            const response = await fetch("/api/status");
+            const data = await response.json();
+
+            let tableHTML = "";
+            for (let cam in data) {
+                const info = data[cam];
+                const rowClass = info.online ? "online" : "offline";
+                const lastSeen = info.last_seen || "-";
+                const duration = info.online ? formatDuration(info.online_since) : "-";
+
+                tableHTML += `
+                    <tr class="${rowClass}">
+                        <td>${cam}</td>
+                        <td>${info.ip}</td>
+                        <td>${info.online ? "Online" : "Offline"}</td>
+                        <td>${lastSeen}</td>
+                        <td>${duration}</td>
+                    </tr>
+                `;
+            }
+            document.getElementById("camera-table").innerHTML = tableHTML;
+        }
+
+        function formatDuration(sinceTimestamp) {
+            if (!sinceTimestamp) return "-";
+            const delta = Math.floor((Date.now() / 1000) - sinceTimestamp);
+            const hrs = Math.floor(delta / 3600);
+            const mins = Math.floor((delta % 3600) / 60);
+            const secs = delta % 60;
+            return `${hrs}h ${mins}m ${secs}s`;
+        }
+
+        setInterval(fetchStatus, 5000); // Every 5 seconds
+        window.onload = fetchStatus;
+    </script>
+</head>
+<body>
+    {% include '_navbar.html' %}
+    <h1>Camera Monitor</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Camera</th>
+                <th>IP</th>
+                <th>Status</th>
+                <th>Last Seen Online</th>
+                <th>Online Duration</th>
+            </tr>
+        </thead>
+        <tbody id="camera-table">
+            <!-- Populated by JS -->
+        </tbody>
+    </table>
+</body>
+</html>
